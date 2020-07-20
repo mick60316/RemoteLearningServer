@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".MainActivity">
+    <RelativeLayout
+        android:id="@+id/debuglayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <VideoView
+            android:id="@+id/videoview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+        </VideoView>
+        <ImageView
+            android:id="@+id/imageview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            >
+        </ImageView>
+
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Phone Connection State:  "
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+            <TextView
+                android:id="@+id/text_conn_state"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=" disconnected "
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </LinearLayout>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=" "
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Receiving text msg: "
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="pare nt" />
+        <TextView
+            android:id="@+id/text_receive_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=" "
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="send bytes"
+            android:onClick="btnSendBytes" />
+
+
+        <LinearLayout
+            android:id="@+id/btn_debug_layout"
+            android:layout_marginTop="600px"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <Button
+                android:text="S1"
+                android:id="@+id/btn_video1"
+                android:onClick="onClick"
+                android:layout_width="300px"
+                android:layout_height="100px">
+            </Button>
+            <Button
+                android:text="S2"
+                android:id="@+id/btn_video2"
+                android:onClick="onClick"
+                android:layout_width="300px"
+                android:layout_height="100px">
+            </Button>
+            <Button
+                android:text="S3"
+                android:id="@+id/btn_video3"
+                android:onClick="onClick"
+                android:layout_width="300px"
+                android:layout_height="100px">
+            </Button>
+            <Button
+                android:text="S4"
+                android:id="@+id/btn_video4"
+                android:onClick="onClick"
+                android:layout_width="300px"
+                android:layout_height="100px">
+            </Button>
+            <Button
+                android:text="S5"
+                android:id="@+id/btn_video5"
+                android:onClick="onClick"
+                android:layout_width="300px"
+                android:layout_height="100px">
+            </Button>
+            <Button
+                android:text="Next"
+                android:id="@+id/btn_play"
+                android:onClick="onClick"
+                android:layout_width="300px"
+                android:layout_height="100px">
+            </Button>
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+
+</RelativeLayout>
