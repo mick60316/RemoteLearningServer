@@ -25,9 +25,7 @@ public class CustomVideoView implements MediaPlayer.OnCompletionListener {
     private ImageView imageView;
 
     private int currentSession= 0;
-    private int currnetPosition=0;
 
-    private boolean isSingle =false;
     private boolean isLoop =false;
     private boolean isVideoReady =false;
 
@@ -67,13 +65,11 @@ public class CustomVideoView implements MediaPlayer.OnCompletionListener {
         });
 
     }
-    public void s5PauseVideo ()
-    {
-        videoView.pause();
-    }
-    public void s5PlayVideo(){videoView.start();}
     public void nextClick ()
     {
+        /*
+            Next button click event
+         */
         if (currentSession ==ExtraTools.S3) {
             videoView.start();
             currentCheckPointIndex ++;
@@ -96,9 +92,7 @@ public class CustomVideoView implements MediaPlayer.OnCompletionListener {
                 session : index from session
         */
 
-
         Log.e(TAG,"Change Session");
-
         currentSession=session;
         currentCheckPointIndex= 0;
         String videoReource="";
@@ -180,35 +174,16 @@ public class CustomVideoView implements MediaPlayer.OnCompletionListener {
                     if (checkPoint[currentCheckPointIndex] != -1 && position > checkPoint[currentCheckPointIndex])
                         videoView.pause();
                 }
-//                Message msg = handler.obtainMessage();
-//                msg.what = TIME_UPDATE_MESSAGE;
-//                msg.obj=ExtraTools.getCurrentTime();
-//                msg.sendToTarget();
-                //Log.i(TAG,"Video position "+videoView.getCurrentPosition());
-
             }
         },0,100);
     }
-    public void setIsSingle (boolean isSingle)
-    {
-        /*
-           set mode  single or multi
-
-           argv:
-            isSingle : single or multi
-         */
-        this.isSingle=isSingle;
-        if (isSingle) {
-            Log.i(TAG, "Change mode : Single mode");
-        }
-        else
-        {
-            Log.i(TAG,"Change mode : multi mode");
-
-        }
-    }
     public void setSessionImage (int imageIndex)
     {
+        /*
+            set imageview 's image  by image index
+            argv:
+                imageIndex : image's index
+         */
         Log.e(TAG,"setSessionImage" +imageIndex);
         currentCheckPointIndex =  imageIndex;
         if (currentCheckPointIndex ==-1){
@@ -222,15 +197,6 @@ public class CustomVideoView implements MediaPlayer.OnCompletionListener {
         currentCheckPointIndex%=4;
 
     }
-
-    public void Init ()
-    {
-        videoView.setVisibility(View.INVISIBLE);
-        imageView.setVisibility(View.VISIBLE);
-        //imageView.setImageResource(Resource.s4ImageId[2]);
-
-    }
-
 
 
 

@@ -24,9 +24,6 @@ public class Resource {
         R.drawable.chess,R.drawable.guess,R.mipmap.piano,R.mipmap.word
     };
 
-
-
-
     public static final int menuBarHideBackground =R.mipmap.control_pad_bar_2;
     public static final int menuBarShowBackground =R.mipmap.control_pad_bar_1;
 
