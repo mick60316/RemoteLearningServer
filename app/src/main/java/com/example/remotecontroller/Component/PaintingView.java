@@ -129,6 +129,7 @@ public class PaintingView extends View
         mPaints.clear();
         mUndonePaths.clear();
         mUndonePaints.clear();
+        if (mDrawCanvas !=null)
         mDrawCanvas.drawColor(0, PorterDuff.Mode.CLEAR);
         invalidate();
     }
