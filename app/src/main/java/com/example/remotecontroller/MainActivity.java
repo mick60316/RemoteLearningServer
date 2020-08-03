@@ -47,8 +47,7 @@ public class MainActivity extends Activity {
 	private PaintingView paintingView;
 	private Button screenshowButton,s4NextButton;
 	private LightSensor lightSensor;
-	private int imageIndex= 0;
-	private  int currentSession=0;
+
 
 	private boolean isNextLock =false;
 
@@ -60,10 +59,10 @@ public class MainActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-
+		setActivityInfo();
 		linkUserInterfaceAndCreateCustomVideoview();
 		registerBoardcast();
-		setActivityInfo();
+
 		changeSession(ExtraTools.S1);
 
 	}
@@ -93,7 +92,7 @@ public class MainActivity extends Activity {
 		lightSensor =new LightSensor((SensorManager)getSystemService(Context.SENSOR_SERVICE),(ImageView) findViewById(R.id.light_mask));
 		lightSensor.setEnable(false);
 		customVideoView =new CustomVideoView((VideoView)findViewById(R.id.videoview),imageView );
-		menubar =new MenuBar((RelativeLayout) findViewById(R.id.manubar),imageView);
+		menubar =new MenuBar((RelativeLayout) findViewById(R.id.manubar),imageView,paintingView);
 		bleDebugLayout =findViewById(R.id.ble_debug_layout);
 		btnDebugLayout=findViewById(R.id.btn_debug_layout);
 
@@ -130,7 +129,7 @@ public class MainActivity extends Activity {
 	@Override
 	protected void onNewIntent(Intent intent) {
 		super.onNewIntent(intent);
-
+		//setActivityInfo();
 
 		if (intent ==null)Log.e(TAG,"Intent  is null");
 		int intentSession = -1;
@@ -174,7 +173,7 @@ public class MainActivity extends Activity {
 		screenshowButton.setVisibility(View.INVISIBLE);
 		//imageView.setImageResource(R.mipmap.control_pad_calendar);
 		s4NextButton.setVisibility(View.INVISIBLE);
-		menubar.setToTranslatePage();
+		menubar.setToPage(Resource.TRANSLATE_PAGE_INDEX);
 
 	}
 
@@ -262,17 +261,27 @@ public class MainActivity extends Activity {
 
 		sendBroadcast(intent);
 	}
-	@SuppressLint("SourceLockedOrientationActivity")
+
 	private void setActivityInfo()// Lock screen orientation and full screen
 	{
-		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-		getWindow().getDecorView().setSystemUiVisibility(
-				View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-						| View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-						| View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-						| View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-						| View.SYSTEM_UI_FLAG_FULLSCREEN
-						| View.SYSTEM_UI_FLAG_IMMERSIVE);
+		View decorView = getWindow().getDecorView();
+		decorView.setOnSystemUiVisibilityChangeListener
+				(new View.OnSystemUiVisibilityChangeListener() {
+					@Override
+					public void onSystemUiVisibilityChange(int visibility) {
+						Log.e(TAG,"Vis change ");
+						setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+						getWindow().getDecorView().setSystemUiVisibility(
+								View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+										| View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+										| View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+										| View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+										| View.SYSTEM_UI_FLAG_FULLSCREEN
+										| View.SYSTEM_UI_FLAG_IMMERSIVE);
+					}
+				});
+
+
 	}
 
 
@@ -284,6 +293,7 @@ public class MainActivity extends Activity {
 				changeSession(ExtraTools.S1);
 				break;
 			case R.id.btn_video2:
+				changeSession(ExtraTools.S2);
 				break;
 			case R.id.btn_video3:
 				changeSession(ExtraTools.S3);
@@ -292,6 +302,7 @@ public class MainActivity extends Activity {
 				changeSession(ExtraTools.S4);
 				break;
 			case R.id.btn_video5:
+				setActivityInfo();
 				break;
 			case R.id.btn_play:
 			case R.id.btn_screenshot:
@@ -332,7 +343,7 @@ public class MainActivity extends Activity {
 	{
 		Log.e(TAG,"Change Session" +Session);
 		customVideoView.changeSession(Session);
-		currentSession =Session;
+
 		switch (Session) {
 			case ExtraTools.S3:
 					menubar.init();
@@ -343,13 +354,21 @@ public class MainActivity extends Activity {
 					s4NextButton.setVisibility(View.INVISIBLE);
 				break;
 			case ExtraTools.S1:case ExtraTools.S2: case ExtraTools.S5:
+
 					imageView.setVisibility(View.VISIBLE);
-					menubar.setVisibility(View.INVISIBLE);
+					menubar.setVisibility(View.VISIBLE);
 					paintingView.setVisibility(View.INVISIBLE);
 					screenshowButton.setVisibility(View.INVISIBLE);
 					imageView.setImageResource(R.mipmap.control_pad_calendar);
+					//menubar.setToTranslatePage();
 					s4NextButton.setVisibility(View.INVISIBLE);
+					if(Session==ExtraTools.S2)
+					{
+						menubar.setToPage(Resource.NOTE_PAGE_INDEX);
+						paintingView.setVisibility(View.VISIBLE);
+					}
 				break;
+
 			case ExtraTools.S4:
 					imageView.setVisibility(View.VISIBLE);
 					menubar.setVisibility(View.INVISIBLE);

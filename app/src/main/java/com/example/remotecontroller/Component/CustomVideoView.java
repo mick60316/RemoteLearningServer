@@ -98,6 +98,8 @@ public class CustomVideoView implements MediaPlayer.OnCompletionListener {
         String videoReource="";
         imageView.setVisibility(View.INVISIBLE);
         isVideoReady =false;
+        videoView.stopPlayback();
+        videoView.resume();
         switch (session)
         {
             case ExtraTools.S1:
@@ -106,6 +108,9 @@ public class CustomVideoView implements MediaPlayer.OnCompletionListener {
                 break;
             case ExtraTools.S2:
                 //videoReource=Resource.s2VideoPath;
+                videoView.setVisibility(View.INVISIBLE);
+                imageView.setVisibility(View.VISIBLE);
+
                 checkPoint =s2CheckPoint;
                 isLoop=true;
                 break;

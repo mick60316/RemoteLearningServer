@@ -18,13 +18,14 @@ public class MenuBar implements View.OnClickListener{
     private Button btn_menu_hide;
     private ImageView menuBarBackground;
     private ImageView resourceDisplay;
-
+    private PaintingView paintingView;
 
     private boolean isHide =true;
 
 
-    public MenuBar(RelativeLayout menuBar,ImageView resourceDisplay)
+    public MenuBar(RelativeLayout menuBar,ImageView resourceDisplay,PaintingView paintingView)
     {
+        this.paintingView=paintingView;
         this.menuBar=menuBar;
         this.resourceDisplay = resourceDisplay;
         linkButton();
@@ -57,6 +58,13 @@ public class MenuBar implements View.OnClickListener{
                     resourceDisplay.setVisibility(View.VISIBLE);
                     menuButton[menuButtonIndex].setBackgroundResource(Resource.menuBarButtonImageId[menuButtonIndex * 2+1]);
                     resourceDisplay.setImageResource(Resource.resourceImageId[menuButtonIndex]);
+                    if (menuButton[menuButtonIndex].getId()==R.id.btn_menu_note)
+                    {
+                        paintingView.setVisibility(View.VISIBLE);
+                        paintingView.clearCanvas();
+                    }
+
+
                 }
                 else
                 {
@@ -75,11 +83,11 @@ public class MenuBar implements View.OnClickListener{
             }
         }
     }
-    public void setToTranslatePage ()
+    public void setToPage (int PageIndex)
     {
 
         for (int menuButtonIndex = 0; menuButtonIndex < menuButton.length; menuButtonIndex++) {
-            if (menuButtonIndex ==3) {
+            if (menuButtonIndex ==PageIndex) {
                 menuButton[menuButtonIndex].setBackgroundResource(Resource.menuBarButtonImageId[menuButtonIndex * 2 + 1]);
             }
             else
@@ -88,8 +96,7 @@ public class MenuBar implements View.OnClickListener{
             }
         }
 
-        resourceDisplay.setImageResource(Resource.resourceImageId[3]);
-
+        resourceDisplay.setImageResource(Resource.resourceImageId[PageIndex]);
     }
 
     public void init()
@@ -97,9 +104,7 @@ public class MenuBar implements View.OnClickListener{
         menuBar.setVisibility(View.VISIBLE);
         for (int menuButtonIndex = 0; menuButtonIndex < menuButton.length; menuButtonIndex++) {
             if (menuButtonIndex==1) {
-
                 menuButton[menuButtonIndex].setBackgroundResource(Resource.menuBarButtonImageId[menuButtonIndex * 2+1]);
-
             }
             else
             {

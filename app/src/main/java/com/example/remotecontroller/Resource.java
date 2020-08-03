@@ -27,6 +27,14 @@ public class Resource {
     public static final int menuBarHideBackground =R.mipmap.control_pad_bar_2;
     public static final int menuBarShowBackground =R.mipmap.control_pad_bar_1;
 
+    public static final int CALENDAR_PAGE_INDEX =0 ;
+    public static final int NOTE_PAGE_INDEX =1;
+    public static final int SKETCH_PAGE_INDEX=2;
+    public static final int TRANSLATE_PAGE_INDEX =3;
+    public static final int RECORD_PAGE_INDEX =4;
+    public static final int MUSIC_PAGE_INDEX =5;
+
+
 
 
 

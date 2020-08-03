@@ -9,28 +9,29 @@
     tools:context=".MainActivity">
     <RelativeLayout
         android:id="@+id/debuglayout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_width="1920px"
+        android:layout_height="1200px">
 
         <VideoView
             android:id="@+id/videoview"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
         </VideoView>
-        <com.example.remotecontroller.Component.PaintingView
-            android:visibility="invisible"
-            android:id="@+id/paintingView"
-            android:layout_width="870px"
-            android:layout_height="790px"
-            android:layout_marginTop="210px"
-            android:layout_marginLeft="974px"
-            ></com.example.remotecontroller.Component.PaintingView>
         <ImageView
             android:id="@+id/imageview"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             >
         </ImageView>
+        <com.example.remotecontroller.Component.PaintingView
+            android:visibility="invisible"
+            android:id="@+id/paintingView"
+            android:layout_width="1920px"
+            android:layout_height="808px"
+            android:layout_marginTop="192px"
+            android:layout_marginLeft="0px"
+            ></com.example.remotecontroller.Component.PaintingView>
+
 
         <Button
             android:visibility="invisible"
