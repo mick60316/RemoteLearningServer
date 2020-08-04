@@ -359,13 +359,17 @@ public class MainActivity extends Activity {
 					menubar.setVisibility(View.VISIBLE);
 					paintingView.setVisibility(View.INVISIBLE);
 					screenshowButton.setVisibility(View.INVISIBLE);
-					imageView.setImageResource(R.mipmap.control_pad_calendar);
 					//menubar.setToTranslatePage();
 					s4NextButton.setVisibility(View.INVISIBLE);
 					if(Session==ExtraTools.S2)
 					{
 						menubar.setToPage(Resource.NOTE_PAGE_INDEX);
 						paintingView.setVisibility(View.VISIBLE);
+					}
+					else
+					{
+						menubar.setToPage(Resource.CALENDAR_PAGE_INDEX);
+
 					}
 				break;
 

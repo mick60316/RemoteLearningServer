@@ -1,6 +1,7 @@
 package com.example.remotecontroller.Component;
 
 import android.animation.ObjectAnimator;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -52,7 +53,11 @@ public class MenuBar implements View.OnClickListener{
 
     public void onClick (View view)
     {
+        
         if (view.getId() != R.id.btn_menu_hide) {
+            int visibility = (view.getId() ==R.id.btn_menu_note)?View.VISIBLE:View.INVISIBLE;
+            paintingView.setVisibility(visibility);
+            Log.e(TAG,"" +visibility);
             for (int menuButtonIndex = 0; menuButtonIndex < menuButton.length; menuButtonIndex++) {
                 if (view.getId() == menuButton[menuButtonIndex].getId()) {
                     resourceDisplay.setVisibility(View.VISIBLE);
@@ -86,16 +91,18 @@ public class MenuBar implements View.OnClickListener{
     public void setToPage (int PageIndex)
     {
 
+
+
         for (int menuButtonIndex = 0; menuButtonIndex < menuButton.length; menuButtonIndex++) {
             if (menuButtonIndex ==PageIndex) {
                 menuButton[menuButtonIndex].setBackgroundResource(Resource.menuBarButtonImageId[menuButtonIndex * 2 + 1]);
+
             }
             else
             {
                 menuButton[menuButtonIndex].setBackgroundResource(Resource.menuBarButtonImageId[menuButtonIndex * 2+0]);
             }
         }
-
         resourceDisplay.setImageResource(Resource.resourceImageId[PageIndex]);
     }
 
