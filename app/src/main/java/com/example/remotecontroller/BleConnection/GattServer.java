@@ -133,6 +133,8 @@ public class GattServer {
 					default:
 						break;
 				}
+			} else if (data.contentEquals("reset,")){
+				myService.triggerActivityToHome();
 			}
 			myService.clientDataToUI(value);
 

@@ -13,11 +13,9 @@ import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.hardware.SensorManager;
-import android.nfc.Tag;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
-import android.util.TimeFormatException;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -39,20 +37,17 @@ import java.util.TimerTask;
 
 public class MainActivity extends Activity {
 	private String TAG ="Mike Remote Learning Bot";
-
 	private TextView connState;
 	private TextView responseMsg;
 	private LinearLayout bleDebugLayout,btnDebugLayout;
 	private boolean isDebugMode =false;
-
 	private CustomVideoView customVideoView;
 	private MenuBar menubar;
 	private ImageView imageView;
 	private PaintingView paintingView;
 	private Button screenshowButton,s4NextButton;
 	private LightSensor lightSensor;
-	private int imageIndex= 0;
-	private  int currentSession=0;
+
 
 	private boolean isNextLock =false;
 
@@ -64,19 +59,12 @@ public class MainActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-
-//		checkSelfPermission();
-		linkUserInterface();
-		registerBoardcast();
 		setActivityInfo();
+		linkUserInterfaceAndCreateCustomVideoview();
+		registerBoardcast();
+
 		changeSession(ExtraTools.S1);
-		//int session=  Integer.valueOf( intent.getStringExtra("Session"));
-		//int imageIndex =Integer.valueOf( intent.getStringExtra("ImageIndex"));
-		//Log.e(TAG,"Session "+session +" "+imageIndex);
 
-
-
-		//changeSession(ExtraTools.S1);
 	}
 
 
@@ -85,14 +73,16 @@ public class MainActivity extends Activity {
 		IntentFilter filter = new IntentFilter();
 		filter.addAction(Constant.CMD_SHUTDOWN);
 		filter.addAction(Constant.RECEIVE);
-//		filter.addAction("getSessionFromServer");
 		filter.addAction(Constant.STATE);
 		registerReceiver(receiver, filter);
-
 	}
 
-	private void linkUserInterface()
+	private void linkUserInterfaceAndCreateCustomVideoview()
 	{
+
+		/*
+			link user interface from xml and create customVideoview
+		*/
 		responseMsg = findViewById(R.id.text_receive_text);
 		connState = findViewById(R.id.text_conn_state);
 		imageView=findViewById( R.id.imageview);
@@ -102,7 +92,7 @@ public class MainActivity extends Activity {
 		lightSensor =new LightSensor((SensorManager)getSystemService(Context.SENSOR_SERVICE),(ImageView) findViewById(R.id.light_mask));
 		lightSensor.setEnable(false);
 		customVideoView =new CustomVideoView((VideoView)findViewById(R.id.videoview),imageView );
-		menubar =new MenuBar((RelativeLayout) findViewById(R.id.manubar),imageView);
+		menubar =new MenuBar((RelativeLayout) findViewById(R.id.manubar),imageView,paintingView);
 		bleDebugLayout =findViewById(R.id.ble_debug_layout);
 		btnDebugLayout=findViewById(R.id.btn_debug_layout);
 
@@ -113,9 +103,6 @@ public class MainActivity extends Activity {
 	protected void onResume() {
 		lightSensor.registerListener();
 		Log.e(TAG,"OnResume");
-
-
-
 		super.onResume();
 	}
 
@@ -142,22 +129,22 @@ public class MainActivity extends Activity {
 	@Override
 	protected void onNewIntent(Intent intent) {
 		super.onNewIntent(intent);
+		//setActivityInfo();
 
-		Intent intent2 = intent;
-
-		if (intent2 ==null)Log.e(TAG,"Intent  is null");
-		String SessionStr= intent2.getStringExtra("Session");
-
-		if (SessionStr ==null)Log.e(TAG,"SessionStr is null;");
-
-		String SessionImageIndex =intent2.getStringExtra("ImageIndex");
+		if (intent ==null)Log.e(TAG,"Intent  is null");
 		int intentSession = -1;
-		if (SessionStr != null) {
+		String SessionStr= intent.getStringExtra("Session");
+		String SessionImageIndex =intent.getStringExtra("ImageIndex");
+		if (SessionStr ==null) {
+			Log.e(TAG, "SessionStr is null;");
+			changeSession(ExtraTools.S1);
+		}
+		else
+		{
 			intentSession = Integer.valueOf(SessionStr)-1;
 			changeSession(intentSession );
-			Log.e(TAG,"Session "+intentSession);
+			Log.e(TAG,"Get Session "+intentSession);
 		}
-		else changeSession(ExtraTools.S1);
 
 		if (SessionImageIndex !=null)
 		{
@@ -167,26 +154,26 @@ public class MainActivity extends Activity {
 				customVideoView.setSessionImage(imageIndex);
 
 			}
-			else if (intentSession ==ExtraTools.S1 && imageIndex ==1)
+			else if (intentSession ==ExtraTools.S1)
 			{
-				imageView.setVisibility(View.VISIBLE);
-				menubar.setVisibility(View.VISIBLE);
-				paintingView.setVisibility(View.INVISIBLE);
-				screenshowButton.setVisibility(View.INVISIBLE);
-				//imageView.setImageResource(R.mipmap.control_pad_calendar);
-				s4NextButton.setVisibility(View.INVISIBLE);
-				menubar.setToTranslatePage();
+				if (imageIndex ==1) {
+					changeToTranslatePage();
+
+				}
 
 			}
-
 			Log.e(TAG,"imageIndex "+imageIndex);
-
-
 		}
-
-
-
-
+	}
+	private  void changeToTranslatePage ()
+	{
+		imageView.setVisibility(View.VISIBLE);
+		menubar.setVisibility(View.VISIBLE);
+		paintingView.setVisibility(View.INVISIBLE);
+		screenshowButton.setVisibility(View.INVISIBLE);
+		//imageView.setImageResource(R.mipmap.control_pad_calendar);
+		s4NextButton.setVisibility(View.INVISIBLE);
+		menubar.setToPage(Resource.TRANSLATE_PAGE_INDEX);
 
 	}
 
@@ -256,7 +243,7 @@ public class MainActivity extends Activity {
 				String data = new String(intent.getByteArrayExtra(Constant.RECEIVE_MSG));
 				Log.i(TAG,"data "+data);
 
-				bleMessageProcess(data);
+				processBleMessage(data);
 
 				responseMsg.setText(data);
 			} else if (action.equals(Constant.STATE)){
@@ -274,17 +261,27 @@ public class MainActivity extends Activity {
 
 		sendBroadcast(intent);
 	}
-	@SuppressLint("SourceLockedOrientationActivity")
+
 	private void setActivityInfo()// Lock screen orientation and full screen
 	{
-		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-		getWindow().getDecorView().setSystemUiVisibility(
-				View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-						| View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-						| View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-						| View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-						| View.SYSTEM_UI_FLAG_FULLSCREEN
-						| View.SYSTEM_UI_FLAG_IMMERSIVE);
+		View decorView = getWindow().getDecorView();
+		decorView.setOnSystemUiVisibilityChangeListener
+				(new View.OnSystemUiVisibilityChangeListener() {
+					@Override
+					public void onSystemUiVisibilityChange(int visibility) {
+						Log.e(TAG,"Vis change ");
+						setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+						getWindow().getDecorView().setSystemUiVisibility(
+								View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+										| View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+										| View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+										| View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+										| View.SYSTEM_UI_FLAG_FULLSCREEN
+										| View.SYSTEM_UI_FLAG_IMMERSIVE);
+					}
+				});
+
+
 	}
 
 
@@ -296,36 +293,21 @@ public class MainActivity extends Activity {
 				changeSession(ExtraTools.S1);
 				break;
 			case R.id.btn_video2:
+				changeSession(ExtraTools.S2);
 				break;
 			case R.id.btn_video3:
 				changeSession(ExtraTools.S3);
 				break;
 			case R.id.btn_video4:
 				changeSession(ExtraTools.S4);
-				//showManuBar();
 				break;
 			case R.id.btn_video5:
-				Log.e(TAG,"BTN5 "+currentSession +" "+imageIndex);
-				changeSession(currentSession);
-				if (currentSession == ExtraTools.S4) {
-
-					customVideoView.setSessionImage(imageIndex);
-					//changeSession(session);
-
-				} else {
-
-					//changeSession(session);
-				}
-				//sendMessageToClient("mode,0".getBytes());
-				//imageView.setVisibility(View.VISIBLE);
-				//customVideoView.Init();
-				//hideManuBar();
+				setActivityInfo();
 				break;
 			case R.id.btn_play:
 			case R.id.btn_screenshot:
 			case R.id.btn_s4next:
 				if (!isNextLock) {
-
 					sendMessageToClient("next,".getBytes());
 					customVideoView.nextClick();
 					isNextLock =true;
@@ -343,7 +325,6 @@ public class MainActivity extends Activity {
 				int visablity =isDebugMode?View.VISIBLE:View.INVISIBLE;
 				bleDebugLayout.setVisibility(visablity);
 				btnDebugLayout.setVisibility(visablity);
-
 				break;
 			default:
 				break;
@@ -362,7 +343,7 @@ public class MainActivity extends Activity {
 	{
 		Log.e(TAG,"Change Session" +Session);
 		customVideoView.changeSession(Session);
-		currentSession =Session;
+
 		switch (Session) {
 			case ExtraTools.S3:
 					menubar.init();
@@ -373,13 +354,25 @@ public class MainActivity extends Activity {
 					s4NextButton.setVisibility(View.INVISIBLE);
 				break;
 			case ExtraTools.S1:case ExtraTools.S2: case ExtraTools.S5:
+
 					imageView.setVisibility(View.VISIBLE);
-					menubar.setVisibility(View.INVISIBLE);
+					menubar.setVisibility(View.VISIBLE);
 					paintingView.setVisibility(View.INVISIBLE);
 					screenshowButton.setVisibility(View.INVISIBLE);
-					imageView.setImageResource(R.mipmap.control_pad_calendar);
+					//menubar.setToTranslatePage();
 					s4NextButton.setVisibility(View.INVISIBLE);
+					if(Session==ExtraTools.S2)
+					{
+						menubar.setToPage(Resource.NOTE_PAGE_INDEX);
+						paintingView.setVisibility(View.VISIBLE);
+					}
+					else
+					{
+						menubar.setToPage(Resource.CALENDAR_PAGE_INDEX);
+
+					}
 				break;
+
 			case ExtraTools.S4:
 					imageView.setVisibility(View.VISIBLE);
 					menubar.setVisibility(View.INVISIBLE);
@@ -389,23 +382,15 @@ public class MainActivity extends Activity {
 					s4NextButton.setVisibility(View.VISIBLE);
 				break;
 
-//			imageView.setVisibility(View.VISIBLE);
-//			menubar.setVisibility(View.VISIBLE);
-//			paintingView.setVisibility(View.INVISIBLE);
-//			screenshowButton.setVisibility(View.INVISIBLE);
-//			//imageView.setImageResource(R.mipmap.control_pad_calendar);
-//			s4NextButton.setVisibility(View.INVISIBLE);
-//			menubar.setToTranslatePage();
-
 			default:
 				break;
 
 		}
 
 	}
-	private void bleMessageProcess (String message)
+	private void processBleMessage(String message)
 	{
-		Log.i(TAG,message);
+		Log.e(TAG,"processBleMessage "+ message);
 		String [] dataSplit =message.split(",");
 		if (dataSplit[0].equals("session"))
 		{
@@ -439,39 +424,8 @@ public class MainActivity extends Activity {
 		}
 		else if (dataSplit[0].equals("audible"))
 		{
-			imageView.setVisibility(View.VISIBLE);
-			menubar.setVisibility(View.VISIBLE);
-			paintingView.setVisibility(View.INVISIBLE);
-			screenshowButton.setVisibility(View.INVISIBLE);
-			//imageView.setImageResource(R.mipmap.control_pad_calendar);
-			s4NextButton.setVisibility(View.INVISIBLE);
-			menubar.setToTranslatePage();
+			changeToTranslatePage();
 		}
-//		else if (dataSplit[0].equals("btm"))
-//		{
-//			if (dataSplit[1].equals("in")) {
-//
-//
-//				int session = Integer.valueOf(dataSplit[2]) -1;
-//				Log.e(TAG,"btm in session "+session);
-//
-//				changeSession(session);
-//				if (session == ExtraTools.S4) {
-//
-//					int imageIndex = Integer.valueOf(dataSplit[3]) ;
-//					Log.e(TAG,"in"+session+" "+imageIndex);
-//					if (imageIndex < 0) imageIndex = 3;
-//					this.imageIndex=imageIndex;
-//					customVideoView.setSessionImage(imageIndex);
-//					//changeSession(session);
-//
-//				} else {
-//
-//					//changeSession(session);
-//				}
-//			}
-//
-//		}
 
 	}
 

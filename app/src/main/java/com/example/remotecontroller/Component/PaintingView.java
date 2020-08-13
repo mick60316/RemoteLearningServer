@@ -30,7 +30,7 @@ public class PaintingView extends View
 
     // Set default values
     private int mBackgroundColor = 0x00000000;
-    private int mPaintColor = 0xFF660000;
+    private int mPaintColor = 0xFF000000;
     private int mStrokeWidth = 10;
 
     public PaintingView(Context context, AttributeSet attrs)
